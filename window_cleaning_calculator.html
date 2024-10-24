@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Window Cleaning Estimate</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #calculator {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        label, input {
+            display: block;
+            margin: 10px 0;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+
+<div id="calculator">
+    <h1>Window Cleaning Estimate</h1>
+    <p id="questionLabel">How much for exterior window cleaning?</p>
+    <input type="text" id="answerInput" placeholder="Enter amount" />
+
+    <button onclick="askQuestion()">Next</button>
+
+    <div id="result" style="display:none;">
+        <h2>Service Package Results</h2>
+        <p id="quarterlyResult"></p>
+        <p id="triannualResult"></p>
+        <p id="biannualResult"></p>
+    </div>
+</div>
+
+<script>
+    let exteriorEstimate = 0;
+    let interiorEstimate = 0;
+    let gutterEstimate = 0;
+    let screenEstimate = 0;
+    let step = 0;
+
+    function askQuestion() {
+        const questionLabel = document.getElementById('questionLabel');
+        const answerInput = document.getElementById('answerInput');
+        const userInput = parseFloat(answerInput.value);
+
+        if (isNaN(userInput) || userInput < 0) {
+            alert("Please enter a valid number.");
+            return;
+        }
+
+        switch (step) {
+            case 0:
+                exteriorEstimate = userInput;
+                questionLabel.textContent = "How much for interior window cleaning?";
+                answerInput.value = "";
+                break;
+            case 1:
+                interiorEstimate = userInput;
+                questionLabel.textContent = "How much for gutter cleaning?";
+                answerInput.value = "";
+                break;
+            case 2:
+                gutterEstimate = userInput;
+                questionLabel.textContent = "How much for screen cleaning?";
+                answerInput.value = "";
+                break;
+            case 3:
+                screenEstimate = userInput;
+                calculateServicePackages();
+                break;
+            default:
+                break;
+        }
+
+        step++;
+    }
+
+    function calculateServicePackages() {
+        const resultDiv = document.getElementById('result');
+        resultDiv.style.display = "block";
+
+        const quarterlyFrequency = {"Exterior": 4, "Interior": 2};
+        const triannualFrequency = {"Exterior": 3, "Interior": 1};
+        const biannualFrequency = {"Exterior": 2, "Interior": 1};
+
+        // Quarterly Package Calculation
+        const quarterlyTotal = (quarterlyFrequency["Exterior"] * exteriorEstimate / 2) + (quarterlyFrequency["Interior"] * interiorEstimate / 2);
+        const quarterlyPayment = quarterlyTotal / 4;
+        document.getElementById("quarterlyResult").textContent = `Quarterly Package: $${quarterlyTotal.toFixed(2)} per year, $${quarterlyPayment.toFixed(2)} per quarter.`;
+
+        // Tri-Annual Package Calculation
+        const triannualTotal = (triannualFrequency["Exterior"] * exteriorEstimate / 2) + (triannualFrequency["Interior"] * interiorEstimate / 2);
+        const triannualPayment = triannualTotal / 3;
+        document.getElementById("triannualResult").textContent = `Tri-Annual Package: $${triannualTotal.toFixed(2)} per year, $${triannualPayment.toFixed(2)} per period.`;
+
+        // Bi-Annual Package Calculation
+        const biannualTotal = (biannualFrequency["Exterior"] * exteriorEstimate / 2) + (biannualFrequency["Interior"] * interiorEstimate / 2);
+        const biannualPayment = biannualTotal / 2;
+        document.getElementById("biannualResult").textContent = `Bi-Annual Package: $${biannualTotal.toFixed(2)} per year, $${biannualPayment.toFixed(2)} per period.`;
+    }
+</script>
+
+</body>
+</html>

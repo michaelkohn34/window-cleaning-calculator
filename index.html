@@ -1,114 +1,979 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-qZvrmS2ekKPF2mSznTQsxqPgnpkI4DNTlrdUmTzrDgektczlKNRRhy5X5AAOnx5S09ydFYWWNSfcEqDTTHgtNA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Window Cleaning Estimate</title>
+    <title>Almighty Windows - Service Calculator</title>
+      <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
     <style>
+      .customer-info {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.customer-name-input {
+    padding: 10px 15px;
+    font-size: 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    width: 300px;
+    max-width: 100%;
+    text-align: center;
+}
+
+.customer-name-input:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.package-title {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #2d3748;
+}
+      /* START OF CSS UPDATE */
+      /* START NEW CSS */
+      .add-service-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: #3498db;
+    cursor: pointer;
+    padding: 5px;
+    margin-left: 10px;
+}
+
+.add-service-btn:hover {
+    opacity: 0.8;
+}
+      .custom-service-section {
+    margin-top: 30px;
+    padding: 20px;
+    background: #f8fafc;
+    border-radius: 8px;
+}
+
+.custom-service-section h3 {
+    margin-bottom: 15px;
+    color: #2d3748;
+}
+
+.custom-service-inputs {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.custom-service-inputs input {
+    padding: 8px;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    min-width: 150px;
+}
+
+.custom-service-inputs button {
+    margin-left: auto;
+}
+      .input-form {
+    padding: 30px;
+}
+
+.input-form h2 {
+    margin-bottom: 30px;
+    text-align: center;
+    width: 100%;
+}
+
+.service-inputs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.tab {
+    padding: 10px 20px;
+    background: #f0f0f0;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.tab.active {
+    background: #3498db;
+    color: white;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.service-details {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+}
+
+.service-row.expanded .service-details {
+    max-height: 200px;
+}
+
+.service-row {
+    cursor: pointer;
+}
+.input-form {
+    margin-bottom: 30px;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 30px;
+}
+
+.service-input input {
+    transition: all 0.2s ease;
+}
+
+.service-input input:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+#result {
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+/* END NEW CSS */
+.info-icon {
+    cursor: help;
+    margin-left: 5px;
+    opacity: 0.7;
+}
+
+.recommended-tag {
+    background: #ebf8ff;
+    color: #2b6cb0;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    margin-left: 8px;
+}
+
+.tooltip {
+    position: absolute;
+    background: #2d3748;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    max-width: 300px;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Remove these color-specific styles */
+/* .service-row.essential td:first-child {
+    font-weight: 600;
+}
+
+.service-row.recommended td:first-child {
+    color: #2b6cb0;
+}
+
+.service-row.optional td:first-child {
+    color: #718096;
+} */
+/* END OF CSS UPDATE */
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
         }
+
         #calculator {
-            max-width: 500px;
+            max-width: 1200px;
             margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
-        label, input {
-            display: block;
-            margin: 10px 0;
+
+        h1 {
+            color: #1a365d;
+            text-align: center;
+            margin-bottom: 30px;
         }
-        #result {
-            margin-top: 20px;
+
+        .input-form {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .service-input {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
             padding: 10px;
-            border: 1px solid #ccc;
+            background: white;
+            border-radius: 6px;
+        }
+
+        .service-input label {
+            flex: 1;
+            font-weight: 500;
+            color: #2d3748;
+        }
+
+        .service-input input {
+            width: 120px;
+            padding: 8px;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            text-align: right;
+        }
+
+        .action-buttons {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 0 5px;
+            transition: background-color 0.3s;
+        }
+
+        .primary-button {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .secondary-button {
+            background-color: #e2e8f0;
+            color: #2d3748;
+        }
+
+        .package-comparison {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .package-comparison th {
+            background: #1a365d;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .package-comparison td {
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+            text-align: center;
+        }
+
+        .almighty-column {
+            background: #ebf8ff;
+        }
+
+        .custom-service-form {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+
+        .custom-service-form input {
+            margin-right: 10px;
+            padding: 8px;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+        }
+
+        #result {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .package-comparison {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+            
+            .service-input {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .service-input input {
+                width: 100%;
+                margin-top: 8px;
+            }
         }
     </style>
 </head>
 <body>
+    <div id="calculator">
+        <h1>Almighty Windows Service Calculator</h1>
+      <div class="customer-info">
+    <input type="text" id="customerName" placeholder="Enter Customer Name" class="customer-name-input">
+</div>
+        
+        <!-- START OF INITIAL FORM HTML REPLACEMENT -->
+<div id="initialForm" class="input-form">
+    <h2>Enter Service Prices</h2>
+    
+    <div class="service-inputs-grid">
+        <div class="service-input">
+            <label>Exterior Window Cleaning</label>
+            <input type="number" id="exteriorEstimate" placeholder="Enter price">
+        </div>
+        
+        <div class="service-input">
+            <label>Interior Window Cleaning</label>
+            <input type="number" id="interiorEstimate" placeholder="Enter price">
+        </div>
+        
+        <div class="service-input">
+            <label>Screen Cleaning</label>
+            <input type="number" id="screenEstimate" placeholder="Enter price">
+        </div>
+        
+        <div class="service-input">
+            <label>Premium Track Cleaning</label>
+            <input type="number" id="trackCleaningEstimate" placeholder="Enter price">
+        </div>
+        
+        <div class="service-input">
+            <label>Cobweb Removal</label>
+            <input type="number" id="cobwebRemovalEstimate" placeholder="Enter price">
+        </div>
+        
+        <div class="service-input">
+            <label>Gutter Cleaning</label>
+            <input type="number" id="gutterEstimate" placeholder="Enter price">
+        </div>
 
-<div id="calculator">
-    <h1>Window Cleaning Estimate</h1>
-    <p id="questionLabel">How much for exterior window cleaning?</p>
-    <input type="text" id="answerInput" placeholder="Enter amount" />
+        <div class="service-input">
+            <label>Pressure Washing</label>
+            <input type="number" id="pressureWashingEstimate" placeholder="Enter price">
+        </div>
 
-    <button onclick="askQuestion()">Next</button>
+        <div class="service-input">
+            <label>Leaf Blowing</label>
+            <input type="number" id="leafBlowingEstimate" placeholder="Enter price">
+        </div>
 
-    <div id="result" style="display:none;">
-        <h2>Service Package Results</h2>
-        <p id="quarterlyResult"></p>
-        <p id="triannualResult"></p>
-        <p id="biannualResult"></p>
+        <div class="service-input">
+            <label>Wind Wall Cleaning</label>
+            <input type="number" id="windWallCleaningEstimate" placeholder="Enter price">
+        </div>
+
+        <div class="service-input">
+            <label>Skylight Cleaning</label>
+            <input type="number" id="skylightCleaningEstimate" placeholder="Enter price">
+        </div>
+    <div class="service-input">
+        <label style="cursor: text; color: #3498db;" onclick="convertToInput(this)">+ Add Service</label>
+        <input type="number" placeholder="Enter price">
+    </div>
+</div>
+    
+    <div class="action-buttons">
+        <button onclick="clearInputs()" class="secondary-button">Clear All</button>
+    </div>
+</div>
+<!-- END OF INITIAL FORM HTML REPLACEMENT -->
+
+        <!-- Results Section -->
+       <div id="result">
+    <div class="tabs">
+        <button class="tab active" onclick="switchTab('comparison')">Package Comparison</button>
+        <button class="tab" onclick="switchTab('breakdown')">Price Breakdown</button>
+    </div>
+
+    <div id="comparisonTab" class="tab-content active">
+        <div id="comparisonChart"></div>
+    </div>
+
+    <div id="breakdownTab" class="tab-content">
+        <div id="paymentBreakdown"></div>
+    </div>
+    
+    <div class="action-buttons">
+        <button onclick="printView()" class="primary-button">Print View</button>
     </div>
 </div>
 
-<script>
-    let exteriorEstimate = 0;
-    let interiorEstimate = 0;
-    let gutterEstimate = 0;
-    let screenEstimate = 0;
-    let step = 0;
-
-    function askQuestion() {
-        const questionLabel = document.getElementById('questionLabel');
-        const answerInput = document.getElementById('answerInput');
-        const userInput = parseFloat(answerInput.value);
-
-        if (isNaN(userInput) || userInput < 0) {
-            alert("Please enter a valid number.");
-            return;
+    <script>
+        // Service definitions remain the same
+        // START OF SERVICES ARRAY REPLACEMENT
+// START OF SERVICES ARRAY REPLACEMENT
+// START OF SERVICES ARRAY REPLACEMENT
+const services = [
+    { 
+        name: 'Exterior Window Cleaning',
+        variable: 'exteriorEstimate',
+        type: 'essential',
+        info: 'Foundation of a well-maintained property. Regular cleaning maintains curb appeal and prevents glass degradation.',
+        frequencies: {
+            Standard: 2,
+            Plus: 3,
+            Almighty: 4,
+            Personal: 12
         }
-
-        switch (step) {
-            case 0:
-                exteriorEstimate = userInput;
-                questionLabel.textContent = "How much for interior window cleaning?";
-                answerInput.value = "";
-                break;
-            case 1:
-                interiorEstimate = userInput;
-                questionLabel.textContent = "How much for gutter cleaning?";
-                answerInput.value = "";
-                break;
-            case 2:
-                gutterEstimate = userInput;
-                questionLabel.textContent = "How much for screen cleaning?";
-                answerInput.value = "";
-                break;
-            case 3:
-                screenEstimate = userInput;
-                calculateServicePackages();
-                break;
-            default:
-                break;
+    },
+    { 
+        name: 'Interior Window Cleaning',
+        variable: 'interiorEstimate',
+        type: 'essential',
+        info: 'Essential for clear views and healthy indoor environment. Removes dust, allergens, and improves natural lighting.',
+        frequencies: {
+            Standard: 1,
+            Plus: 1,
+            Almighty: 2,
+            Personal: 6
         }
+    },
+    { 
+        name: 'Screen Cleaning',
+        variable: 'screenEstimate',
+        type: 'essential',
+        info: '',
+        frequencies: {
+            Standard: 1,
+            Plus: 1,
+            Almighty: 2,
+            Personal: 4
+        }
+    },
+    { 
+        name: 'Premium Track Cleaning',
+        variable: 'trackCleaningEstimate',
+        type: 'recommended',
+        info: 'Extends window life and ensures smooth operation. Prevents costly repairs and maintains window warranties.',
+        frequencies: {
+            Standard: 0,
+            Plus: 1,
+            Almighty: 1,
+            Personal: 3
+        }
+    },
+    { 
+        name: 'Cobweb Removal',
+        variable: 'cobwebRemovalEstimate',
+        type: 'recommended',
+        info: 'Professional touch that dramatically improves property appearance. Prevents spider damage and keeps entrances inviting.',
+        frequencies: {
+            Standard: 0,
+            Plus: 0,
+            Almighty: 4,
+            Personal: 12
+        }
+    },
+    { 
+        name: 'Gutter Cleaning',
+        variable: 'gutterEstimate',
+        type: 'recommended',
+        info: 'Prevents water damage and maintains property value. Essential for protecting foundations and preventing overflow.',
+        frequencies: {
+            Standard: 0,
+            Plus: 0,
+            Almighty: 1,
+            Personal: 4
+        }
+    },
+    { 
+        name: 'Pressure Washing',
+        variable: 'pressureWashingEstimate',
+        type: 'recommended',
+        info: 'Restores surfaces and maintains property value. Prevents mold and mildew buildup.',
+        frequencies: {
+            Standard: 0,
+            Plus: 0,
+            Almighty: 1,
+            Personal: 2
+        }
+    },
+    { 
+        name: 'Leaf Blowing',
+        variable: 'leafBlowingEstimate',
+        type: 'recommended',
+        info: 'Maintains property cleanliness and prevents debris buildup.',
+        frequencies: {
+            Standard: 0,
+            Plus: 0,
+            Almighty: 4,
+            Personal: 12
+        }
+    },
+    { 
+        name: 'Wind Wall Cleaning',
+        variable: 'windWallCleaningEstimate',
+        type: 'recommended',
+        info: 'Specialized cleaning for wind walls and barriers. Maintains clarity and appearance.',
+        frequencies: {
+            Standard: 0,
+            Plus: 0,
+            Almighty: 2,
+            Personal: 4
+        }
+    },
+    { 
+        name: 'Skylight Cleaning',
+        variable: 'skylightCleaningEstimate',
+        type: 'recommended',
+        info: 'Maximizes natural light and maintains skylight clarity. Prevents water damage and leaks.',
+        frequencies: {
+            Standard: 0,
+            Plus: 0,
+            Almighty: 2,
+            Personal: 4
+        }
+    }
+];
+// END OF SERVICES ARRAY REPLACEMENT
 
-        step++;
+        let estimates = {};
+        let customServices = [];
+
+        // All other functions remain the same (generateComparisonChart, addCustomService, etc.)
+        function calculatePackagePrice(packageName) {
+    let total = 0;
+    
+    // Calculate core services
+    services.forEach(service => {
+        const frequency = service.frequencies[packageName] || 0;
+        const price = estimates[service.variable] || 0;
+        total += frequency * price;
+    });
+    
+    // Add custom services
+    customServices.forEach(service => {
+        if (service.frequencies[packageName]) {
+            total += service.price * service.frequencies[packageName];
+        }
+    });
+    
+    return total;
+}
+
+function generatePaymentBreakdown(packageName, annualCost) {
+    return `
+        <div class="payment-item">
+            <h4>${packageName}</h4>
+            <p>Monthly: $${(annualCost / 12).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+            <p>Quarterly: $${(annualCost / 4).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+            <p>Annual: $${annualCost.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+        </div>
+    `;
+}
+
+function generateComparisonChart() {
+    const comparisonContainer = document.getElementById('comparisonChart');
+    const customerName = document.getElementById('customerName').value;
+    
+    let html = '';
+    
+    // Add customer name if it exists
+    if (customerName) {
+        html += `<h2 class="package-title">Service Package for ${customerName}</h2>`;
+    }
+    
+    html += `<table class="package-comparison">
+        <tr>
+            <th>Features</th>
+            <th>Standard</th>
+            <th>Plus</th>
+            <th>Almighty <span class="popular-badge">POPULAR</span></th>
+            <th>Personal Service</th>
+        </tr>
+        <tr>
+            <td>Annual Investment</td>
+            <td class="editable" onclick="editPrice(this, 'Standard')">$${calculatePackagePrice('Standard').toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+            <td class="editable" onclick="editPrice(this, 'Plus')">$${calculatePackagePrice('Plus').toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+            <td class="almighty-column editable" onclick="editPrice(this, 'Almighty')">$${calculatePackagePrice('Almighty').toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+            <td class="editable" onclick="editPrice(this, 'Personal')">$${calculatePackagePrice('Personal').toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+        </tr>`;
+
+    // Add core services
+    services.forEach(service => {
+        html += generateServiceRow(service);
+    });
+
+    // Add custom services
+    customServices.forEach(service => {
+        html += generateCustomServiceRow(service);
+    });
+
+    html += `</table>`;
+    comparisonContainer.innerHTML = html;
+
+    // Generate payment breakdown
+    const breakdownHTML = ['Standard', 'Plus', 'Almighty', 'Personal'].map(pkg => 
+        generatePaymentBreakdown(pkg, calculatePackagePrice(pkg))
+    ).join('');
+    
+    document.getElementById('paymentBreakdown').innerHTML = breakdownHTML;
+}
+
+// START OF GENERATE SERVICE ROW REPLACEMENT
+function generateServiceRow(service) {
+    const price = estimates[service.variable];
+    
+    if (!price || price === 0) return '';
+
+    const infoIcon = service.info ? `
+        <span class="info-icon" 
+              onmouseover="showTooltip(event, '${service.info}')"
+              onmouseout="hideTooltip()">
+            ℹ️
+        </span>` : '';
+
+    return `
+    <tr class="service-row ${service.type}" onclick="toggleDetails(this)">
+        <td>
+            ${service.name} 
+            ${service.type !== 'essential' ? infoIcon : ''}
+            ${service.type === 'recommended' ? '<span class="recommended-tag">Recommended</span>' : ''}
+        </td>
+        <td class="editable" onclick="editFrequency(this, '${service.variable}', 'Standard')">${getServiceFrequencyDisplay(service, 'Standard')}</td>
+        <td class="editable" onclick="editFrequency(this, '${service.variable}', 'Plus')">${getServiceFrequencyDisplay(service, 'Plus')}</td>
+        <td class="almighty-column editable" onclick="editFrequency(this, '${service.variable}', 'Almighty')">${getServiceFrequencyDisplay(service, 'Almighty')}</td>
+        <td class="editable" onclick="editFrequency(this, '${service.variable}', 'Personal')">${getServiceFrequencyDisplay(service, 'Personal')}</td>
+    </tr>`;
+}
+// END OF GENERATE SERVICE ROW REPLACEMENT
+
+function generateCustomServiceRow(service) {
+    return `
+    <tr>
+        <td class="editable" onclick="removeCustomService('${service.name}')" title="Click to remove">${service.name}</td>
+        <td class="editable" onclick="editCustomFrequency(this, '${service.name}', 'Standard')">${service.frequencies.Standard || '—'}</td>
+        <td class="editable" onclick="editCustomFrequency(this, '${service.name}', 'Plus')">${service.frequencies.Plus || '—'}</td>
+        <td class="almighty-column editable" onclick="editCustomFrequency(this, '${service.name}', 'Almighty')">${service.frequencies.Almighty || '—'}</td>
+        <td class="editable" onclick="editCustomFrequency(this, '${service.name}', 'Personal')">${service.frequencies.Personal || '—'}</td>
+    </tr>`;
+}
+
+function getServiceFrequencyDisplay(service, packageName) {
+    const frequency = service.frequencies[packageName];
+    return frequency ? `${frequency}x/year` : '—';
+}
+
+function editFrequency(cell, serviceVariable, packageName) {
+    const currentValue = services.find(s => s.variable === serviceVariable).frequencies[packageName];
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.value = currentValue || 0;
+    input.min = 0;
+    
+    input.onblur = function() {
+        const newValue = parseInt(this.value) || 0;
+        services.find(s => s.variable === serviceVariable).frequencies[packageName] = newValue;
+        generateComparisonChart();
+    };
+    
+    cell.innerHTML = '';
+    cell.appendChild(input);
+    input.focus();
+}
+
+function editPrice(cell, packageName) {
+    const currentValue = calculatePackagePrice(packageName);
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.value = currentValue;
+    input.min = 0;
+    input.step = 0.01;
+    
+    cell.innerHTML = '';
+    cell.appendChild(input);
+    input.focus();
+}
+
+function addCustomService() {
+    const name = document.getElementById('customServiceName').value;
+    const price = parseFloat(document.getElementById('customServicePrice').value);
+    const frequency = parseInt(document.getElementById('customServiceFrequency').value);
+
+    if (!name || isNaN(price) || isNaN(frequency)) {
+        alert('Please fill in all fields with valid values');
+        return;
     }
 
-    function calculateServicePackages() {
-        const resultDiv = document.getElementById('result');
-        resultDiv.style.display = "block";
+    const newService = {
+        name,
+        price,
+        frequencies: {
+            Standard: 0,
+            Plus: 0,
+            Almighty: 0,
+            Personal: 0
+        }
+    };
 
-        const quarterlyFrequency = {"Exterior": 4, "Interior": 2};
-        const triannualFrequency = {"Exterior": 3, "Interior": 1};
-        const biannualFrequency = {"Exterior": 2, "Interior": 1};
+    customServices.push(newService);
+    generateComparisonChart();
 
-        // Quarterly Package Calculation
-        const quarterlyTotal = (quarterlyFrequency["Exterior"] * exteriorEstimate / 2) + (quarterlyFrequency["Interior"] * interiorEstimate / 2);
-        const quarterlyPayment = quarterlyTotal / 4;
-        document.getElementById("quarterlyResult").textContent = `Quarterly Package: $${quarterlyTotal.toFixed(2)} per year, $${quarterlyPayment.toFixed(2)} per quarter.`;
+    // Clear inputs
+    document.getElementById('customServiceName').value = '';
+    document.getElementById('customServicePrice').value = '';
+    document.getElementById('customServiceFrequency').value = '';
+}
 
-        // Tri-Annual Package Calculation
-        const triannualTotal = (triannualFrequency["Exterior"] * exteriorEstimate / 2) + (triannualFrequency["Interior"] * interiorEstimate / 2);
-        const triannualPayment = triannualTotal / 3;
-        document.getElementById("triannualResult").textContent = `Tri-Annual Package: $${triannualTotal.toFixed(2)} per year, $${triannualPayment.toFixed(2)} per period.`;
+function editCustomFrequency(cell, serviceName, packageName) {
+    const service = customServices.find(s => s.name === serviceName);
+    const currentValue = service.frequencies[packageName];
+    
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.value = currentValue || 0;
+    input.min = 0;
+    
+    input.onblur = function() {
+        const newValue = parseInt(this.value) || 0;
+        service.frequencies[packageName] = newValue;
+        generateComparisonChart();
+    };
+    
+    cell.innerHTML = '';
+    cell.appendChild(input);
+    input.focus();
+}
 
-        // Bi-Annual Package Calculation
-        const biannualTotal = (biannualFrequency["Exterior"] * exteriorEstimate / 2) + (biannualFrequency["Interior"] * interiorEstimate / 2);
-        const biannualPayment = biannualTotal / 2;
-        document.getElementById("biannualResult").textContent = `Bi-Annual Package: $${biannualTotal.toFixed(2)} per year, $${biannualPayment.toFixed(2)} per period.`;
+function removeCustomService(serviceName) {
+    customServices = customServices.filter(service => service.name !== serviceName);
+    generateComparisonChart();
+}
+
+function printView() {
+    const element = document.getElementById('comparisonChart');
+    const customerName = document.getElementById('customerName').value;
+    
+    // Create a new window
+    const printWindow = window.open('', '_blank');
+    
+    // Add content to the new window
+    printWindow.document.write(
+        '<html>' +
+        '<head>' +
+            '<title>Almighty Windows Package - ' + (customerName || 'Customer') + '</title>' +
+            '<style>' +
+                'body { font-family: Arial, sans-serif; padding: 20px; }' +
+                'table { width: 100%; border-collapse: collapse; margin-top: 20px; }' +
+                'th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }' +
+                'th { background-color: #1a365d; color: white; }' +
+                '.almighty-column { background-color: #ebf8ff; }' +
+                '.download-btn { background-color: #3498db; color: white; padding: 10px 20px; ' +
+                    'border: none; border-radius: 5px; cursor: pointer; margin-top: 20px; font-size: 16px; }' +
+                '.download-btn:hover { background-color: #2980b9; }' +
+            '</style>' +
+        '</head>' +
+        '<body>' +
+            '<div id="content">' +
+                '<h1>Almighty Windows Service Package</h1>' +
+                '<h2>Prepared for: ' + (customerName || 'Customer') + '</h2>' +
+                '<p>Date: ' + new Date().toLocaleDateString() + '</p>' +
+                element.innerHTML +
+            '</div>' +
+            '<button onclick="window.print()" class="download-btn">Print</button>' +
+        '</body>' +
+        '</html>'
+    );
+    
+    // Close the document writing
+    printWindow.document.close();
+}
+      // START NEW JAVASCRIPT
+document.addEventListener('DOMContentLoaded', function() {
+    // Add input event listeners to all service inputs
+    services.forEach(service => {
+        const input = document.getElementById(service.variable);
+        input.addEventListener('input', function() {
+            // Update estimates object
+            const value = parseFloat(this.value);
+            estimates[service.variable] = isNaN(value) ? 0 : value;
+            // Regenerate comparison chart
+            generateComparisonChart();
+        });
+    });
+});
+      function switchTab(tabName) {
+    // Hide all tab contents
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    
+    // Deactivate all tabs
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // Show selected tab content
+    document.getElementById(tabName + 'Tab').classList.add('active');
+    
+    // Activate selected tab
+    event.target.classList.add('active');
+}
+
+function toggleDetails(row) {
+    row.classList.toggle('expanded');
+}
+      function addNewCustomService() {
+    const newServiceInput = document.createElement('div');
+    newServiceInput.className = 'service-input';
+    newServiceInput.innerHTML = `
+        <label>Custom Service</label>
+        <input type="number" id="customEstimate" placeholder="Enter price" onclick="convertToCustomService(this)">
+        <button class="add-service-btn" onclick="addNewCustomService()" title="Add another custom service">+</button>
+    `;
+    
+    // Add the new custom service input to the grid
+    document.querySelector('.service-inputs-grid').appendChild(newServiceInput);
+}
+      function updateCustomServiceName(nameInput) {
+    const serviceName = nameInput.value;
+    if (serviceName) {
+        const serviceId = 'custom_' + Date.now();
+        const priceInput = nameInput.nextElementSibling;
+        priceInput.id = serviceId;
+        
+        // Add to services array
+        services.push({
+            name: serviceName,
+            variable: serviceId,
+            type: 'custom',
+            info: '',
+            frequencies: {
+                Standard: 0,
+                Plus: 0,
+                Almighty: 0,
+                Personal: 0
+            }
+        });
+        
+        // Add event listener for price changes
+        priceInput.addEventListener('input', function() {
+            const value = parseFloat(this.value);
+            estimates[this.id] = isNaN(value) ? 0 : value;
+            generateComparisonChart();
+        });
     }
-</script>
+}
 
+function addAnotherService(button) {
+    const newServiceInput = document.createElement('div');
+    newServiceInput.className = 'service-input';
+    newServiceInput.innerHTML = `
+        <input type="text" placeholder="+ Add Service" onclick="this.select()" onblur="updateCustomServiceName(this)">
+        <input type="number" placeholder="Enter price">
+        <button class="add-service-btn" onclick="addAnotherService(this)" title="Add another service">+</button>
+    `;
+    
+    button.parentElement.parentElement.insertBefore(newServiceInput, button.parentElement.nextSibling);
+    newServiceInput.querySelector('input[type="text"]').focus();
+}
+// END NEW JAVASCRIPT
+      function convertToInput(label) {
+    const serviceInput = label.parentElement;
+    
+    // Convert this box to a regular service input
+    label.style.cursor = 'default';
+    label.onclick = null;
+    const nameInput = document.createElement('input');
+    nameInput.type = 'text';
+    nameInput.placeholder = 'Enter service name';
+    nameInput.onblur = function() {
+        if (this.value) {
+            // Create the service
+            const serviceName = this.value;
+            const serviceId = 'custom_' + Date.now();
+            
+            // Replace input with label
+            const newLabel = document.createElement('label');
+            newLabel.textContent = serviceName;
+            this.parentElement.replaceChild(newLabel, this);
+            
+            // Setup price input
+            const priceInput = serviceInput.querySelector('input[type="number"]');
+            priceInput.id = serviceId;
+            
+            // Add to services array
+            services.push({
+                name: serviceName,
+                variable: serviceId,
+                type: 'custom',
+                info: '',
+                frequencies: {
+                    Standard: 0,
+                    Plus: 0,
+                    Almighty: 0,
+                    Personal: 0
+                }
+            });
+            
+            // Add event listener for price changes
+            priceInput.addEventListener('input', function() {
+                const value = parseFloat(this.value);
+                estimates[this.id] = isNaN(value) ? 0 : value;
+                generateComparisonChart();
+            });
+            
+            // Add new "+ Add Service" box
+            addNewAddServiceBox();
+        }
+    };
+    label.parentElement.replaceChild(nameInput, label);
+    nameInput.focus();
+}
+
+function addNewAddServiceBox() {
+    const newBox = document.createElement('div');
+    newBox.className = 'service-input';
+    newBox.innerHTML = `
+        <label style="cursor: text; color: #3498db;" onclick="convertToInput(this)">+ Add Service</label>
+        <input type="number" placeholder="Enter price">
+    `;
+    document.querySelector('.service-inputs-grid').appendChild(newBox);
+}
+      function clearInputs() {
+    // Clear all number inputs
+    const inputs = document.querySelectorAll('.service-input input[type="number"]');
+    inputs.forEach(input => {
+        input.value = '';
+    });
+
+    // Clear the estimates object
+    estimates = {};
+
+    // Clear custom services array
+    customServices = [];
+
+    // Regenerate the comparison chart
+    generateComparisonChart();
+}
+    </script>
 </body>
 </html>

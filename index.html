@@ -551,7 +551,21 @@ const services = [
             Almighty: 2,
             Personal: 4
         }
+    },
+  { 
+        name: 'Personalized Service',
+        variable: 'personalizedServiceEstimate',
+        type: 'recommended',
+        info: 'Custom tailored service to meet your specific needs and preferences.',
+        frequencies: {
+            Standard: 0,
+            Plus: 0,
+            Almighty: 0,
+            Personal: 1
+        }
     }
+  
+  
 ];
 // END OF SERVICES ARRAY REPLACEMENT
 
@@ -772,38 +786,225 @@ function printView() {
     const element = document.getElementById('comparisonChart');
     const customerName = document.getElementById('customerName').value;
     
-    // Create a new window
-    const printWindow = window.open('', '_blank');
+    const packages = ['Standard', 'Plus', 'Almighty', 'Personal'];
+    let paymentDetailsHTML = packages.map(pkg => {
+        const annualCost = calculatePackagePrice(pkg);
+        const isAlmighty = pkg === 'Almighty' ? 'almighty-package' : '';
+        return `
+            <div class="payment-package ${isAlmighty}">
+                <h3>${pkg} Package Payment Options ${pkg === 'Almighty' ? `<span class="popular-badge" style="margin-left: 10px;">POPULAR</span>` : ''}</h3>
+                <div class="payment-details">
+                    <p><strong>Monthly Payment:</strong> $${(annualCost / 12).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+                    <p><strong>Quarterly Payment:</strong> $${(annualCost / 4).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+                    <p><strong>Annual Payment:</strong> $${annualCost.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+                </div>
+            </div>
+        `;
+    }).join('');
+  const selectedServices = services.filter(service => estimates[service.variable] > 0)
+        .map(service => service.name);
+
+    const additionalServices = services.filter(service => !estimates[service.variable] || estimates[service.variable] === 0)
+        .map(service => service.name);
+
+    const additionalServicesHTML = additionalServices.length ? `
+        <div class="additional-services-section">
+            <p class="customization-note">All packages are fully customizable to meet your specific needs.</p>
+            <h3>Additional Available Services:</h3>
+            <ul class="additional-services-list">
+                ${additionalServices.map(service => `<li>${service}</li>`).join('')}
+            </ul>
+        </div>
+    ` : '';
+
+    const printWindow = window.open('Almighty Windows', '_blank');
     
-    // Add content to the new window
-    printWindow.document.write(
-        '<html>' +
-        '<head>' +
-            '<title>Almighty Windows Package - ' + (customerName || 'Customer') + '</title>' +
-            '<style>' +
-                'body { font-family: Arial, sans-serif; padding: 20px; }' +
-                'table { width: 100%; border-collapse: collapse; margin-top: 20px; }' +
-                'th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }' +
-                'th { background-color: #1a365d; color: white; }' +
-                '.almighty-column { background-color: #ebf8ff; }' +
-                '.download-btn { background-color: #3498db; color: white; padding: 10px 20px; ' +
-                    'border: none; border-radius: 5px; cursor: pointer; margin-top: 20px; font-size: 16px; }' +
-                '.download-btn:hover { background-color: #2980b9; }' +
-            '</style>' +
-        '</head>' +
-        '<body>' +
-            '<div id="content">' +
-                '<h1>Almighty Windows Service Package</h1>' +
-                '<h2>Prepared for: ' + (customerName || 'Customer') + '</h2>' +
-                '<p>Date: ' + new Date().toLocaleDateString() + '</p>' +
-                element.innerHTML +
-            '</div>' +
-            '<button onclick="window.print()" class="download-btn">Print</button>' +
-        '</body>' +
-        '</html>'
-    );
+   printWindow.document.write(`
+    <html>
+    <head>
+        <title>Almighty Windows Package - ${customerName || 'Customer'}</title>
+        <meta name="description" content="Almighty Windows">
+        <meta name="application-name" content="Almighty Windows">
+        <style>
+                @media print {
+                @media print {
+    .additional-services-section {
+        background: #f8fafc !important;
+    }
+    .additional-services-list li {
+        background: white !important;
+    }
+}
+                    * { 
+                        -webkit-print-color-adjust: exact !important; 
+                        print-color-adjust: exact !important; 
+                    }
+                    .almighty-column { 
+                        background-color: #ebf8ff !important; 
+                    }
+                    th { 
+                        background-color: #1a365d !important; 
+                        color: white !important; 
+                    }
+                    .popular-badge { 
+    background: #fef3c7; 
+    color: #1a365d; 
+    padding: 4px 8px; 
+    border-radius: 12px; 
+    font-size: 12px; 
+    font-weight: bold;
+    margin-left: 15px;
+    display: inline-block;
+    vertical-align: middle;
+}
+.additional-services-section {
+    margin: 30px 0;
+    padding: 20px;
+    background: #f8fafc;
+    border-radius: 8px;
+}
+
+.customization-note {
+    color: #2d3748;
+    font-style: italic;
+    margin-bottom: 15px;
+}
+.page-break {
+    page-break-before: always;
+}
+
+@media print {
+    .page-break {
+        page-break-before: always !important;
+    }
+}
+.additional-services-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    list-style: none;
+    padding: 0;
+}
+
+.additional-services-list li {
+    padding: 8px;
+    background: white;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+                    .payment-package.almighty-package { 
+                        background: #ebf8ff !important; 
+                    }
+                    .recommended-tag {
+                        background: #ebf8ff !important;
+                        color: #2b6cb0 !important;
+                        padding: 2px 6px !important;
+                        border-radius: 4px !important;
+                    }
+                }
+                body { 
+                    font-family: Arial, sans-serif; 
+                    padding: 20px; 
+                }
+                table { 
+                    width: 100%; 
+                    border-collapse: collapse; 
+                    margin-top: 20px; 
+                }
+                th, td { 
+                    border: 1px solid #ddd; 
+                    padding: 8px; 
+                    text-align: center; 
+                }
+                td:first-child { 
+                    text-align: left; 
+                }
+                .almighty-column { 
+                    background-color: #ebf8ff; 
+                }
+                .popular-badge { 
+                    background: #fef3c7; 
+                    color: #1a365d; 
+                    padding: 4px 8px; 
+                    border-radius: 12px; 
+                    font-size: 12px; 
+                    font-weight: bold;
+                    margin-left: 10px;
+                }
+                .recommended-tag { 
+                    background: #ebf8ff; 
+                    color: #2b6cb0; 
+                    padding: 2px 6px; 
+                    border-radius: 4px; 
+                    font-size: 12px; 
+                    margin-left: 8px; 
+                }
+                .payment-section {
+    margin-top: 30px;
+    padding: 20px;
+    background: #f8fafc;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+                .payment-section h2 {
+                    grid-column: 1 / -1;
+                    margin-bottom: 20px;
+                }
+                .payment-package {
+                    background: white;
+                    padding: 15px;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                }
+                .payment-package.almighty-package {
+                    background: #ebf8ff;
+                }
+                .payment-package {
+    background: white;
+    padding: 12px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.payment-package h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.1em;
+}
+
+.payment-details p {
+    margin: 5px 0;
+    font-size: 0.95em;
+}
+
+.payment-section h2 {
+    grid-column: 1 / -1;
+    margin-bottom: 15px;
+}
+                h1, h2, h3 {
+                    color: #1a365d;
+                }
+            </style>
+        </head>
+        <body>
+            <div id="content">
+    <h1>Almighty Windows Service Package</h1>
+    <h2>Prepared for: ${customerName || 'Customer'}</h2>
+    <p>Date: ${new Date().toLocaleDateString()}</p>
+    ${element.innerHTML}
+    <div class="payment-section">
+        <h2>Payment Options</h2>
+        ${paymentDetailsHTML}
+    </div>
+    <div class="page-break"></div>
+    ${additionalServicesHTML}
+</div>
+            </div>
+            <button onclick="window.print()" style="background-color: #3498db; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-top: 20px; font-size: 16px;">Print</button>
+        </body>
+        </html>
+    `);
     
-    // Close the document writing
     printWindow.document.close();
 }
       // START NEW JAVASCRIPT
